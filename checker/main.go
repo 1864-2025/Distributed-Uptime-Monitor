@@ -38,7 +38,8 @@ func main() {
 	wg := sync.WaitGroup{}
 	urls := []string{
 		"https://www.google.com",
-		"https://yandex.ru",
+		"https://www.yandex.ru",
+		"https://www.cu.ru",
 		"https://www.facebook.com",
 		"https://www.twitter.com",
 		"https://www.youtube.com",
