@@ -4,11 +4,13 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"sync"
 	"time"
 )
 
-func main() {
-	url := "https://www.google.com"
+func checkURL(url string, wg *sync.WaitGroup) {
+
+	defer wg.Done()
 
 	client := &http.Client{
 		Timeout: 5 * time.Second,
@@ -23,9 +25,28 @@ func main() {
 	defer func(Body io.ReadCloser) {
 		err := Body.Close()
 		if err != nil {
-
+			fmt.Printf("Error closing body: %v\n", err)
 		}
 	}(resp.Body)
 
-	fmt.Println("response Status:", resp.Status)
+	fmt.Printf("URL: %s; response Status: %s\n", url, resp.Status)
+
+	return
+}
+
+func main() {
+	wg := sync.WaitGroup{}
+	urls := []string{
+		"https://www.google.com",
+		"https://yandex.ru",
+		"https://www.facebook.com",
+		"https://www.twitter.com",
+		"https://www.youtube.com",
+		"https://www.golgfhisuhefol.com",
+	}
+	wg.Add(len(urls))
+	for _, url := range urls {
+		go checkURL(url, &wg)
+	}
+	wg.Wait()
 }
