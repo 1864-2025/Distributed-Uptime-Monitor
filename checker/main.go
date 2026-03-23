@@ -1,11 +1,14 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"io"
 	"net/http"
 	"sync"
 	"time"
+
+	"github.com/jackc/pgx/v5"
 )
 
 func checkURL(url string, wg *sync.WaitGroup) {
@@ -35,6 +38,16 @@ func checkURL(url string, wg *sync.WaitGroup) {
 }
 
 func main() {
+
+	conn := connectDB()
+
+	defer func(conn *pgx.Conn, ctx context.Context) {
+		err := conn.Close(ctx)
+		if err != nil {
+			fmt.Printf("Error closing connection: %v\n", err)
+		}
+	}(conn, context.Background())
+
 	wg := sync.WaitGroup{}
 	urls := []string{
 		"https://www.google.com",
