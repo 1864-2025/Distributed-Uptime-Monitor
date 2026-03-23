@@ -5,13 +5,13 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-func connectDB() *pgx.Conn {
+func connectDB() *pgxpool.Pool {
 	dsn := "postgres://user:password@localhost:5432/uptime_monitor"
 
-	conn, err := pgx.Connect(context.Background(), dsn)
+	dbpool, err := pgxpool.New(context.Background(), dsn)
 	if err != nil {
 		fmt.Printf("Unable to connect to database: %v\n", err)
 		os.Exit(1)
@@ -19,5 +19,5 @@ func connectDB() *pgx.Conn {
 
 	fmt.Println("Successfully connected to database")
 
-	return conn
+	return dbpool
 }
