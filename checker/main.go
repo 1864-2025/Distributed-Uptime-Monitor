@@ -2,14 +2,32 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
+	"os"
 	"sync"
 	"time"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 )
+
+func loadUrlsFromJson(filename string) ([]string, error) {
+	file, err := os.ReadFile(filename)
+	if err != nil {
+		return nil, err
+	}
+
+	var urls []string
+	err = json.Unmarshal(file, &urls)
+	if err != nil {
+		return nil, err
+	}
+
+	return urls, nil
+}
 
 func checkURL(url string, wg *sync.WaitGroup, conn *pgxpool.Pool) {
 
@@ -61,14 +79,9 @@ func main() {
 
 	wg := sync.WaitGroup{}
 
-	urls := []string{
-		"https://www.google.com",
-		"https://www.yandex.ru",
-		"https://www.cu.ru",
-		"https://www.facebook.com",
-		"https://www.twitter.com",
-		"https://www.youtube.com",
-		"https://www.golgfhisuhefol.com",
+	urls, err := loadUrlsFromJson("urls.json")
+	if err != nil {
+		log.Fatalf("Не удалось загрузить список URL: %v", err)
 	}
 
 	for {
