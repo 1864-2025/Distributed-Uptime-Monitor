@@ -60,6 +60,7 @@ func main() {
 	}(conn)
 
 	wg := sync.WaitGroup{}
+
 	urls := []string{
 		"https://www.google.com",
 		"https://www.yandex.ru",
@@ -69,9 +70,18 @@ func main() {
 		"https://www.youtube.com",
 		"https://www.golgfhisuhefol.com",
 	}
-	wg.Add(len(urls))
-	for _, url := range urls {
-		go checkURL(url, &wg, conn)
+
+	for {
+		wg.Add(len(urls))
+		for _, url := range urls {
+			go checkURL(url, &wg, conn)
+		}
+
+		wg.Wait()
+
+		fmt.Println("Iteration end. Waiting 60 seconds.")
+
+		time.Sleep(60 * time.Second)
+
 	}
-	wg.Wait()
 }

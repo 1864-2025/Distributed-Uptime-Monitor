@@ -3,13 +3,27 @@ package main
 import (
 	"context"
 	"fmt"
+	"log"
 	"os"
 
 	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/joho/godotenv"
 )
 
 func connectDB() *pgxpool.Pool {
-	dsn := "postgres://user:password@localhost:5432/uptime_monitor"
+
+	err := godotenv.Load("../.env")
+	if err != nil {
+		log.Println("Предупреждение: .env файл не найден, используются системные переменные")
+	}
+
+	user := os.Getenv("DB_USER")
+	pass := os.Getenv("DB_PASSWORD")
+	host := os.Getenv("DB_HOST")
+	port := os.Getenv("DB_PORT")
+	dbName := os.Getenv("DB_NAME")
+
+	dsn := fmt.Sprintf("postgres://%s:%s@%s:%s/%s", user, pass, host, port, dbName)
 
 	dbpool, err := pgxpool.New(context.Background(), dsn)
 	if err != nil {
